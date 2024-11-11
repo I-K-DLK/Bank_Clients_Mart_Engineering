@@ -100,7 +100,7 @@ format 'CSV'(header delimiter '^' null '');
 drop external table if exists CLIENT;
 
 create external table CLIENT(id text, c_inspect text, c_state_stage text, C_COUNTRY text, c_contacts text, c_okved_array text,
-C_VIDS_CL text, c_okved_in_period text, c_addresses text,	C_OKATO_CODE text,	c_name text, C_I_NAME text,	C_INN text,	
+C_VIDS_CL text, c_okved_in_period text, c_addresses text, C_OKATO_CODE text, c_name text, C_I_NAME text, C_INN text,	
 C_KIO text, C_CRR text, c_kpp text, c_Resident text, c_taxr text, c_crt_dat text) 
 location('gpfdist://10.30.104.107:8081/CLIENT.csv')
 format 'CSV'(header delimiter '^' null '');
@@ -123,7 +123,7 @@ format 'CSV'(header delimiter '^' null '');
 
 drop external table if exists CONTACTS;
 
-create external table CONTACTS(id text,	collection_id text,	c_type text, c_numb text, c_dat_edt text) 
+create external table CONTACTS(id text,	collection_id text, c_type text, c_numb text, c_dat_edt text) 
 location('gpfdist://10.30.104.107:8081/CONTACTS.csv')
 format 'CSV'(header delimiter '^' null '');
 
@@ -162,7 +162,7 @@ format 'CSV'(header delimiter ',' null '');
 
 drop external table if exists NAMES_CITY;
 
-create external table NAMES_CITY(ID	text, C_NAME text, C_COD_CITY text,	C_COUNTRY text,	C_STATUS text,	C_PEOPLE_PLACE text) 
+create external table NAMES_CITY(ID text, C_NAME text, C_COD_CITY text, C_COUNTRY text, C_STATUS text, C_PEOPLE_PLACE text) 
 location('gpfdist://10.30.104.107:8081/NAMES_CITY.csv')
 format 'CSV'(header delimiter '^' null '');
 
@@ -200,8 +200,8 @@ format 'CSV'(header delimiter '^' null '');
 
 drop external table if exists PERSONAL_ADDRESS;
 
-create external table PERSONAL_ADDRESS(Id text,	COLLECTION_ID text,	C_TYPE text, C_CITY	text, C_POST_CODE text,
-C_STREET text, C_HOUSE text, C_KORPUS text,	C_BUILDING_NUMBER text,	C_FLAT text) 
+create external table PERSONAL_ADDRESS(Id text,	COLLECTION_ID text, C_TYPE text, C_CITY	text, C_POST_CODE text,
+C_STREET text, C_HOUSE text, C_KORPUS text, C_BUILDING_NUMBER text, C_FLAT text) 
 location('gpfdist://10.30.104.107:8081/PERSONAL_ADDRESS.csv')
 format 'CSV'(header delimiter '^' null '');
 
@@ -210,7 +210,7 @@ format 'CSV'(header delimiter '^' null '');
 
 drop external table if exists PERSONS_POS;
 
-create external table PERSONS_POS(ID text, C_FASE text,	COLLECTION_ID text,	C_CHIEF	text, C_RANGE text,	C_GENERAL_ACC text,	
+create external table PERSONS_POS(ID text, C_FASE text,	COLLECTION_ID text, C_CHIEF text, C_RANGE text,	C_GENERAL_ACC text,	
 C_WORK_END text, C_WORK_BEGIN text) 
 location('gpfdist://10.30.104.107:8081/PERSONS_POS.csv')
 format 'CSV'(header delimiter '^' null '');
@@ -231,7 +231,7 @@ format 'CSV'(header delimiter '^' null '');
 
 drop external table if exists ST_CLIENT;
 
-create external table ST_CLIENT(ID text, C_KIND_LIMIT text,	COLLECTION_ID text,	C_DATE_BEGIN text, C_DATE_END text, C_REASON text, 
+create external table ST_CLIENT(ID text, C_KIND_LIMIT text, COLLECTION_ID text,	C_DATE_BEGIN text, C_DATE_END text, C_REASON text, 
 C_LIM_NUM text,	C_DOP_INFO text, C_LIM_DATE text) 
 location('gpfdist://10.30.104.107:8081/ST_CLIENT.csv')
 format 'CSV'(header delimiter ',' null '');
@@ -241,8 +241,8 @@ format 'CSV'(header delimiter ',' null '');
 
 drop external table if exists TAX_INSP;
 
-create external table TAX_INSP(ID text,	COLLECTION_ID text,	C_NAME text, C_REG_DOC_SER text, C_REG_DOC_NUMB	text, C_DATE text,
-C_REG_DOC_DATE text,	C_INSPECTOR text) 
+create external table TAX_INSP(ID text,	COLLECTION_ID text, C_NAME text, C_REG_DOC_SER text, C_REG_DOC_NUMB text, C_DATE text,
+C_REG_DOC_DATE text, C_INSPECTOR text) 
 location('gpfdist://10.30.104.107:8081/TAX_INSP.csv')
 format 'CSV'(header delimiter '^' null '');
 
@@ -273,8 +273,7 @@ elimination_info text, service_start_date text, bic text, reg_num text, corr_acc
 last_symbol_inn text)
   
 distributed by (client_id) -- установим распределение по id клиента
-
-
+ 
  -- установим два уровня партицирования по последнему символу поля 'last_symbol_inn' и  значению поля 'is_currency_residence'
    
 partition by list (last_symbol_inn)
@@ -300,8 +299,8 @@ default partition other);
 
 with frd as(
 select cl.id as id, ins.c_reg_doc_ser, ins.c_reg_doc_numb , ins.c_date as fns_registration_date, ins.c_reg_doc_date, clorg.c_name,
-ct.c_name as city, rgn.c_name as area, concat_ws(';',ins.c_reg_doc_ser, ins.c_reg_doc_numb,ins.c_reg_doc_date,clorg.c_name,ct.c_name,rgn.c_name) as fns_registration_doc, 
-row_number() over (partition by cl.id order by ins.c_date desc) as rn 
+ct.c_name as city, rgn.c_name as area, concat_ws(';',ins.c_reg_doc_ser, ins.c_reg_doc_numb,ins.c_reg_doc_date,clorg.c_name,ct.c_name,
+rgn.c_name) as fns_registration_doc, row_number() over (partition by cl.id order by ins.c_date desc) as rn 
 from client cl 
 	left join tax_insp ins on ins.collection_id = cl.c_inspect 	
 	left join tax_inspect insp on insp.id = ins.c_name 
@@ -477,10 +476,9 @@ coalesce((select cc1.c_long_name from cl_corp cc1 left join  cl_corp cc2 on cc1.
 where cc2.id = cc.id)) as registration_authority_name,  
 coalesce(to_char(to_date(ti.c_date, 'dd.mm.yy'), 'yyyymmdd') ,'<null>') as fns_registration_date, 
 coalesce(frd.fns_registration_doc ,'<null>') as fns_registration_doc, cl.c_okato_code as okato_code,'' as okato_name, 
-'[]' as list_okved_code, '' as list_okved_name, 
-round(coalesce(cc.c_register_declare_uf::decimal, cc.c_register_paid_uf::decimal),2) as authorized_capital_amt,
-coalesce(cla.list_address,'[]') as list_legal_address, coalesce(cfa.list_address,'[]') as list_fact_address, 
-coalesce(pl.list_phone,'[]')  as list_phone, 
+'[]' as list_okved_code, '' as list_okved_name, round(coalesce(cc.c_register_declare_uf::decimal,
+cc.c_register_paid_uf::decimal),2) as authorized_capital_amt, coalesce(cla.list_address,'[]') as list_legal_address, 
+coalesce(cfa.list_address,'[]') as list_fact_address, coalesce(pl.list_phone,'[]') as list_phone, 
 coalesce(fl.list_fax,'[]')  as list_fax, coalesce(el.list_email,'[]') as list_email, coalesce(cb.c_swift_c ,'<null>') as swift, 
 cl.c_resident as is_currency_residence,  coalesce(cl.c_taxr ,'<null>') as is_tax_resident,  coalesce(dn.namepers,'<null>') as director_name, 
 coalesce(cacn.namepers,'<null>') as chief_accountant_name,  coalesce(clgm.c_name ,'<null>') as business_segment_name,  
@@ -497,8 +495,8 @@ from client cl
 	left join country cn on cl.c_country = cn.id 
  	left join tax_insp ti on cl.c_inspect = ti.collection_id
  	left join frd on cl.id = frd.id
-    left join client_legal_address cla on cl.id = cla.cl_id
-    left join client_fact_address cfa on cl.id = cfa.id
+    	left join client_legal_address cla on cl.id = cla.cl_id
+    	left join client_fact_address cfa on cl.id = cfa.id
  	left join phone_list pl on cl.id = pl.id
  	left join fax_list fl on cl.id = fl.id
 	left join email_list el on cl.id = el.id	 
