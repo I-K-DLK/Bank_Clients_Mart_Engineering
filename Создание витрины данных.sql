@@ -17,7 +17,7 @@ last_symbol_inn text)
 distributed by (client_id) -- установим распределение по id клиента
 
 
- -- установим два уровня партицирования по последнему символу поля 'last_symbol_inn' и  значению поля 'is_currency_residence'
+ -- установим два уровня партиционирования по последнему символу поля 'last_symbol_inn' и  значению поля 'is_currency_residence'
    
 partition by list (last_symbol_inn)
 subpartition by list (is_currency_residence)
