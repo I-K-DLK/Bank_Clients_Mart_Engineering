@@ -201,8 +201,8 @@ from client cl
 	left join country cn on cl.c_country = cn.id 
  	left join tax_insp ti on cl.c_inspect = ti.collection_id
  	left join frd on cl.id = frd.id
-    left join client_legal_address cla on cl.id = cla.cl_id
-    left join client_fact_address cfa on cl.id = cfa.id
+    	left join client_legal_address cla on cl.id = cla.cl_id
+    	left join client_fact_address cfa on cl.id = cfa.id
  	left join phone_list pl on cl.id = pl.id
  	left join fax_list fl on cl.id = fl.id
 	left join email_list el on cl.id = el.id	 
